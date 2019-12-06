@@ -4,14 +4,11 @@ import com.alllexe.sweater.domen.Role;
 import com.alllexe.sweater.domen.User;
 import com.alllexe.sweater.repository.UserRepo;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * @author Alexander Abramov (alllexe@mail.ru)
