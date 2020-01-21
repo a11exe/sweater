@@ -8,6 +8,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.Length;
 
 /**
  * @author Alexander Abramov (alllexe@mail.ru)
@@ -18,10 +21,14 @@ import javax.persistence.ManyToOne;
 public class Message {
 
   @Id
-  @GeneratedValue(strategy=GenerationType.IDENTITY)
+  @GeneratedValue(strategy=GenerationType.AUTO)
   private long id;
 
+  @NotBlank(message = "Please fill the message")
+  @Length(max = 2048, message = "message too long")
   private String text;
+  @NotBlank(message = "Please fill the tag")
+  @Length(max = 255, message = "tag too long")
   private String tag;
 
   @ManyToOne(fetch = FetchType.EAGER)
