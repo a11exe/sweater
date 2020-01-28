@@ -3,6 +3,7 @@ package com.alllexe.sweater.controller;
 import com.alllexe.sweater.domen.Message;
 import com.alllexe.sweater.domen.User;
 import com.alllexe.sweater.repository.MessageRepo;
+import com.alllexe.sweater.service.UserService;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -34,6 +35,7 @@ public class MainController {
 
   @Autowired
   private MessageRepo messageRepo;
+  private UserService userService;
 
   @Value("${upload.path}")
   private String uploadPath;
@@ -58,13 +60,13 @@ public class MainController {
 
   @PostMapping("/main")
   public String add(
-      @AuthenticationPrincipal User user,
+      @AuthenticationPrincipal User currentUser,
       @Valid Message message,
       BindingResult bindingResult,
       Model model,
       @RequestParam("file") MultipartFile file
   ) throws IOException {
-    message.setAuthor(user);
+    message.setAuthor(currentUser);
 
     if (bindingResult.hasErrors()) {
       Map<String, String> errorsMap = ControllerUtils.getErrors(bindingResult);
@@ -105,6 +107,10 @@ public class MainController {
   ) {
     Set<Message> messages = user.getMessages();
 
+    model.addAttribute("userChannel", user);
+    model.addAttribute("subscriptionsCount", user.getSubscriptions().size());
+    model.addAttribute("subscribersCount", user.getSubscribers().size());
+    model.addAttribute("isSubscriber", user.getSubscribers().contains(currentUser));
     model.addAttribute("messages", messages);
     model.addAttribute("message", message);
     model.addAttribute("isCurrentUser", currentUser.equals(user));

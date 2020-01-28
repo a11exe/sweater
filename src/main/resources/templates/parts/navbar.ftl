@@ -35,7 +35,7 @@
     </ul>
   </div>
   <div class="navbar-text mr-3">
-  ${name}
+    <#if user??>${name}<#else>Please log in</#if>
   </div>
   <@l.logout />
 </nav>
