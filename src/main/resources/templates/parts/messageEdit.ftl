@@ -7,7 +7,7 @@
     <form method="post" enctype="multipart/form-data">
       <div class="form-group">
         <input type="text" class="form-control ${(textError??)?string('is-invalid', '')}"
-               value="<#if message??>${message.text}</#if>" name="text" placeholder="Введите сообщение"/>
+               value="<#if message??>${message.text}</#if>" name="text" placeholder="Введите сообщение" />
         <#if textError??>
           <div class="invalid-feedback">
             ${textError}
@@ -16,7 +16,7 @@
       </div>
       <div class="form-group">
         <input type="text" class="form-control ${(tagError??)?string('is-invalid', '')}"
-               value="<#if message??>${message.tag}</#if>" name="tag" placeholder="Тэг">
+               value="<#if message??>${message.tag}</#if>" name="tag" placeholder="Тэг" />
         <#if tagError??>
           <div class="invalid-feedback">
             ${tagError}
@@ -29,8 +29,8 @@
           <input type="file" class="form-control" name="file" id="custom-file"/>
         </div>
       </div>
-      <input type="hidden" name="_csrf" value="${_csrf.token}"/>
-      <input type="hidden" name="id" value="<#if message??>${message.id}</#if>"/>
+      <input type="hidden" name="_csrf" value="${_csrf.token}" />
+      <input type="hidden" name="id" value="<#if message??>${message.id}</#if>" />
       <button class="btn btn-primary" type="submit">Save message</button>
     </form>
   </div>
