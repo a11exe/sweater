@@ -69,7 +69,9 @@ public class MainController {
       @AuthenticationPrincipal User currentUser,
       @Valid Message message,
       BindingResult bindingResult,
+      @RequestParam(required = false, defaultValue = "") String filter,
       Model model,
+      @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable,
       @RequestParam("file") MultipartFile file
   ) throws IOException {
     message.setAuthor(currentUser);
@@ -85,8 +87,15 @@ public class MainController {
       messageRepo.save(message);
     }
 
-    Iterable<Message> messages = messageRepo.findAll();
-    model.addAttribute("messages", messages);
+    Page<Message> page;
+    if (filter == null || filter.isEmpty()) {
+      page = messageRepo.findAll(pageable);
+    } else {
+      page = messageRepo.findByTag(filter, pageable);
+    }
+    model.addAttribute("filter", filter);
+    model.addAttribute("page", page);
+    model.addAttribute("url", "/main");
     return "main";
   }
 
