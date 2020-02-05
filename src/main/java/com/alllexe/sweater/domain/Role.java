@@ -1,4 +1,4 @@
-package com.alllexe.sweater.domen;
+package com.alllexe.sweater.domain;
 
 import org.springframework.security.core.GrantedAuthority;
 

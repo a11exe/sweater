@@ -1,10 +1,9 @@
 package com.alllexe.sweater.controller;
 
-import com.alllexe.sweater.domen.Role;
-import com.alllexe.sweater.domen.User;
+import com.alllexe.sweater.domain.Role;
+import com.alllexe.sweater.domain.User;
 import com.alllexe.sweater.service.UserService;
 import java.util.Map;
-import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

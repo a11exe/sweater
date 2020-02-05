@@ -1,4 +1,4 @@
-package com.alllexe.sweater.domen.dto;
+package com.alllexe.sweater.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

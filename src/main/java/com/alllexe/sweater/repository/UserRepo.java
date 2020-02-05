@@ -1,6 +1,6 @@
 package com.alllexe.sweater.repository;
 
-import com.alllexe.sweater.domen.User;
+import com.alllexe.sweater.domain.User;
 import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 

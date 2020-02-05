@@ -1,9 +1,8 @@
 package com.alllexe.sweater.service;
 
-import com.alllexe.sweater.domen.Role;
-import com.alllexe.sweater.domen.User;
+import com.alllexe.sweater.domain.Role;
+import com.alllexe.sweater.domain.User;
 import com.alllexe.sweater.repository.UserRepo;
-import freemarker.template.utility.StringUtil;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;

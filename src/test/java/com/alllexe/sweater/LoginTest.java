@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.alllexe.sweater.controller.MainController;
+import com.alllexe.sweater.controller.MessageController;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 public class LoginTest {
 
   @Autowired
-  private MainController controller;
+  private MessageController controller;
 
   @Autowired
   private MockMvc mockMvc;

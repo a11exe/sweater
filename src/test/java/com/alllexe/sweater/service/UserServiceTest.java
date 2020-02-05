@@ -3,13 +3,12 @@ package com.alllexe.sweater.service;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 
-import com.alllexe.sweater.domen.Role;
-import com.alllexe.sweater.domen.User;
+import com.alllexe.sweater.domain.Role;
+import com.alllexe.sweater.domain.User;
 import com.alllexe.sweater.repository.UserRepo;
 import java.util.Collections;
 import org.junit.Test;

@@ -1,5 +1,8 @@
-package com.alllexe.sweater.domen;
+package com.alllexe.sweater.domain;
 
+import com.alllexe.sweater.domain.util.MessageHelper;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -7,9 +10,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
 /**
@@ -38,6 +42,14 @@ public class Message {
   @Column(name = "file")
   private String filename;
 
+  @ManyToMany
+  @JoinTable(
+      name = "message_likes",
+      joinColumns = {@JoinColumn(name = "message_id")},
+      inverseJoinColumns = {@JoinColumn(name = "user_id")}
+  )
+  private Set<User> likes = new HashSet<>();
+
   public Message() {
   }
 
@@ -48,9 +60,8 @@ public class Message {
   }
 
   public String getAuthorName() {
-    return getAuthor() == null ? "" : getAuthor().getUsername();
+    return MessageHelper.getAuthorName(getAuthor());
   }
-
 
   public User getAuthor() {
     return author;
@@ -90,5 +101,13 @@ public class Message {
 
   public void setFilename(String filename) {
     this.filename = filename;
+  }
+
+  public Set<User> getLikes() {
+    return likes;
+  }
+
+  public void setLikes(Set<User> likes) {
+    this.likes = likes;
   }
 }

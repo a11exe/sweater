@@ -1,9 +1,10 @@
 package com.alllexe.sweater.controller;
 
-import com.alllexe.sweater.domen.Message;
-import com.alllexe.sweater.domen.User;
+import com.alllexe.sweater.domain.Message;
+import com.alllexe.sweater.domain.User;
+import com.alllexe.sweater.domain.dto.MessageDto;
 import com.alllexe.sweater.repository.MessageRepo;
-import com.alllexe.sweater.service.UserService;
+import com.alllexe.sweater.service.MessageService;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -24,8 +25,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * @author Alexander Abramov (alllexe@mail.ru)
@@ -33,11 +38,12 @@ import org.springframework.web.multipart.MultipartFile;
  * @since 05.12.2019
  */
 @Controller
-public class MainController {
-
+public class MessageController {
   @Autowired
   private MessageRepo messageRepo;
-  private UserService userService;
+
+  @Autowired
+  private MessageService messageService;
 
   @Value("${upload.path}")
   private String uploadPath;
@@ -51,30 +57,27 @@ public class MainController {
   public String main(
       @RequestParam(required = false, defaultValue = "") String filter,
       Model model,
-      @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
-    Page<Message> page;
-    if (filter == null || filter.isEmpty()) {
-      page = messageRepo.findAll(pageable);
-    } else {
-      page = messageRepo.findByTag(filter, pageable);
-    }
-    model.addAttribute("filter", filter);
+      @PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC) Pageable pageable,
+      @AuthenticationPrincipal User user
+  ) {
+    Page<MessageDto> page = messageService.messageList(pageable, filter, user);
+
     model.addAttribute("page", page);
     model.addAttribute("url", "/main");
+    model.addAttribute("filter", filter);
+
     return "main";
   }
 
   @PostMapping("/main")
   public String add(
-      @AuthenticationPrincipal User currentUser,
+      @AuthenticationPrincipal User user,
       @Valid Message message,
       BindingResult bindingResult,
-      @RequestParam(required = false, defaultValue = "") String filter,
       Model model,
-      @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable,
       @RequestParam("file") MultipartFile file
   ) throws IOException {
-    message.setAuthor(currentUser);
+    message.setAuthor(user);
 
     if (bindingResult.hasErrors()) {
       Map<String, String> errorsMap = ControllerUtils.getErrors(bindingResult);
@@ -83,52 +86,54 @@ public class MainController {
       model.addAttribute("message", message);
     } else {
       saveFile(message, file);
+
       model.addAttribute("message", null);
+
       messageRepo.save(message);
     }
 
-    Page<Message> page;
-    if (filter == null || filter.isEmpty()) {
-      page = messageRepo.findAll(pageable);
-    } else {
-      page = messageRepo.findByTag(filter, pageable);
-    }
-    model.addAttribute("filter", filter);
-    model.addAttribute("page", page);
-    model.addAttribute("url", "/main");
+    Iterable<Message> messages = messageRepo.findAll();
+
+    model.addAttribute("messages", messages);
+
     return "main";
   }
 
-  private void saveFile(@Valid Message message,
-      @RequestParam("file") MultipartFile file) throws IOException {
+  private void saveFile(@Valid Message message, @RequestParam("file") MultipartFile file) throws IOException {
     if (file != null && !file.getOriginalFilename().isEmpty()) {
       File uploadDir = new File(uploadPath);
+
       if (!uploadDir.exists()) {
         uploadDir.mkdir();
       }
+
       String uuidFile = UUID.randomUUID().toString();
-      String resultFileName = uuidFile + "." + file.getOriginalFilename();
-      file.transferTo(new File(uploadPath + File.separator + resultFileName));
-      message.setFilename(resultFileName);
+      String resultFilename = uuidFile + "." + file.getOriginalFilename();
+
+      file.transferTo(new File(uploadPath + "/" + resultFilename));
+
+      message.setFilename(resultFilename);
     }
   }
 
-  @GetMapping("/user-messages/{user}")
-  public String userMessages(
+  @GetMapping("/user-messages/{author}")
+  public String userMessges(
       @AuthenticationPrincipal User currentUser,
-      @PathVariable User user,
+      @PathVariable User author,
       Model model,
-      @RequestParam(required = false) Message message
+      @RequestParam(required = false) Message message,
+      @PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC) Pageable pageable
   ) {
-    Set<Message> messages = user.getMessages();
+    Page<MessageDto> page = messageService.messageListForUser(pageable, currentUser, author);
 
-    model.addAttribute("userChannel", user);
-    model.addAttribute("subscriptionsCount", user.getSubscriptions().size());
-    model.addAttribute("subscribersCount", user.getSubscribers().size());
-    model.addAttribute("isSubscriber", user.getSubscribers().contains(currentUser));
-    model.addAttribute("messages", messages);
+    model.addAttribute("userChannel", author);
+    model.addAttribute("subscriptionsCount", author.getSubscriptions().size());
+    model.addAttribute("subscribersCount", author.getSubscribers().size());
+    model.addAttribute("isSubscriber", author.getSubscribers().contains(currentUser));
+    model.addAttribute("page", page);
     model.addAttribute("message", message);
-    model.addAttribute("isCurrentUser", currentUser.equals(user));
+    model.addAttribute("isCurrentUser", currentUser.equals(author));
+    model.addAttribute("url", "/user-messages/" + author.getId());
 
     return "userMessages";
   }
@@ -137,25 +142,50 @@ public class MainController {
   public String updateMessage(
       @AuthenticationPrincipal User currentUser,
       @PathVariable Long user,
-      Model model,
       @RequestParam("id") Message message,
       @RequestParam("text") String text,
       @RequestParam("tag") String tag,
       @RequestParam("file") MultipartFile file
   ) throws IOException {
-
     if (message.getAuthor().equals(currentUser)) {
       if (!StringUtils.isEmpty(text)) {
         message.setText(text);
       }
+
       if (!StringUtils.isEmpty(tag)) {
         message.setTag(tag);
       }
+
       saveFile(message, file);
+
       messageRepo.save(message);
     }
-    return "redirect:/user-messages/" + user;
 
+    return "redirect:/user-messages/" + user;
+  }
+
+  @GetMapping("/messages/{message}/like")
+  public String like(
+      @AuthenticationPrincipal User currentUser,
+      @PathVariable Message message,
+      RedirectAttributes redirectAttributes,
+      @RequestHeader(required = false) String referer
+  ) {
+    Set<User> likes = message.getLikes();
+
+    if (likes.contains(currentUser)) {
+      likes.remove(currentUser);
+    } else {
+      likes.add(currentUser);
+    }
+
+    UriComponents components = UriComponentsBuilder.fromHttpUrl(referer).build();
+
+    components.getQueryParams()
+        .entrySet()
+        .forEach(pair -> redirectAttributes.addAttribute(pair.getKey(), pair.getValue()));
+
+    return "redirect:" + components.getPath();
   }
 
 }

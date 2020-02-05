@@ -1,4 +1,4 @@
-package com.alllexe.sweater.domen;
+package com.alllexe.sweater.domain;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -18,7 +18,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import org.springframework.security.core.GrantedAuthority;
