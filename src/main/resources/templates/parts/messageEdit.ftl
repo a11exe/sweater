@@ -1,7 +1,9 @@
-<a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button"
-   aria-expanded="false" aria-controls="collapseExample">
-  Message editor
-</a>
+<#if message??>
+  <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button"
+     aria-expanded="false" aria-controls="collapseExample">
+    Message editor
+  </a>
+</#if>
 <div class="collapse <#if message??>show</#if>" id="collapseExample">
   <div class="form-group mt-3">
     <form method="post" enctype="multipart/form-data">
