@@ -70,7 +70,7 @@ public class UserService implements UserDetailsService {
       String message = String.format(
         "Hello %s!, \n" +
             "<h1>Welcome to Sweater!</h1> \n" +
-            "To activate account visit link <a href=\"http://%s:8080/activate/%s\">Confirm registration</a>", user.getUsername(), hostname, user.getActivationCode()
+            "To activate account visit link <a href=\"http://%s/activate/%s\">Confirm registration</a>", user.getUsername(), hostname, user.getActivationCode()
       );
       mailSender.send(user.getEmail(), "Activation code", message);
     }
