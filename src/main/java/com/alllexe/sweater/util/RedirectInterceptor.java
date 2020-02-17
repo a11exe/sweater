@@ -17,9 +17,9 @@ public class RedirectInterceptor extends HandlerInterceptorAdapter {
       ModelAndView modelAndView) throws Exception {
 
     if (modelAndView != null) {
-      String args = request.getQueryString() != null ? request.getQueryString() : "";
-      String url = request.getRequestURI().toString() + "?" + args;
-      response.setHeader("TurboLinks-Location", url);
+//      String args = request.getQueryString() != null ? request.getQueryString() : "";
+//      String url = request.getRequestURI().toString() + "?" + args;
+//      response.setHeader("TurboLinks-Location", url);
     }
   }
 }

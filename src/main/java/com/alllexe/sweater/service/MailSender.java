@@ -1,9 +1,13 @@
 package com.alllexe.sweater.service;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 /**
@@ -20,16 +24,23 @@ public class MailSender {
   @Value("${spring.mail.username}")
   private String username;
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(MailSender.class);
+
   public void send(String mailTo, String subject, String message) {
 
-    SimpleMailMessage mailMessage = new SimpleMailMessage();
+    try {
+      MimeMessage mimeMessage = mailSender.createMimeMessage();
+      MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
 
-    mailMessage.setFrom(username);
-    mailMessage.setTo(mailTo);
-    mailMessage.setSubject(subject);
-    mailMessage.setText(message);
+      helper.setFrom(username);
+      helper.setTo(mailTo);
+      helper.setSubject(subject);
+      helper.setText(message, true);
 
-    mailSender.send(mailMessage);
+      mailSender.send(mimeMessage);
+    } catch (MessagingException e) {
+      LOGGER.error("error sending confirmation email {}", username);
+    }
   }
 
 }

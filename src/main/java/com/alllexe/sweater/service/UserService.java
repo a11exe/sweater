@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -34,6 +35,9 @@ public class UserService implements UserDetailsService {
 
   @Autowired
   private PasswordEncoder passwordEncoder;
+
+  @Value("${server.name}")
+  private String hostname;
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -65,8 +69,8 @@ public class UserService implements UserDetailsService {
     if (!StringUtils.isEmpty(user.getEmail())) {
       String message = String.format(
         "Hello %s!, \n" +
-            "Welcome to Sweater! \n" +
-            "To activate account visit http://localhost:8080/activate/%s", user.getUsername(), user.getActivationCode()
+            "<h1>Welcome to Sweater!</h1> \n" +
+            "To activate account visit link <a href=\"http://%s:8080/activate/%s\">Confirm registration</a>", user.getUsername(), hostname, user.getActivationCode()
       );
       mailSender.send(user.getEmail(), "Activation code", message);
     }
