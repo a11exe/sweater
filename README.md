@@ -6,6 +6,8 @@ Light twitter
 
 Design and implement a light twitter analog using Spring-Boot
 
+![sweater](https://github.com/a11exe/sweater/blob/master/sweater.gif)
+
 ## Used technologies
 
 + Java 8
